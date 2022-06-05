@@ -1,0 +1,124 @@
+import tkinter
+from tkinter import *
+import requests #get data from third party
+import json 
+root=tkinter.Tk()
+root.title("AIR Quality Index")
+root.geometry("600x100")
+
+#frames
+topframe = LabelFrame(root,padx=100,pady=60,bg="orange")
+topframe.pack(padx=100,pady=100)
+bottomframe = Frame (root,padx=100,pady=60)
+bottomframe.pack(padx=200,pady=100)
+bt = Frame(root)
+bt.pack(padx=20,pady=20)
+
+
+#list of zip codes to search
+zip_code=Label(bottomframe,text= "Choose a zip code: "+"[96720,96801,96819,43056,43060,90201,19701,83201,62001,20500,35005,99501,19980,83876]",font=("Serif",10),bg="black",fg="white",bd=10)
+zip_code.pack()
+
+
+
+
+
+# imported requests
+#ziplookup function
+#using request.get("url") got the third party data
+# to get the content from api_request
+
+def ziplookup():
+   
+     #try and exception used  
+    try:
+        api_request = requests.get("https://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=" + zip.get()+ "&distance=5&API_KEY=53451A9A-DAE5-411E-B2FF-282E5CE7C8D3")
+        api = json.loads(api_request.content)
+    
+    # giving parameters to variables 
+        city=api[0]['ReportingArea']
+        quality=api[0]['AQI']
+        category=api[0]['Category']['Name']
+    
+    #conditional statements to change color of screen according to the air quality
+    
+        if category == "Good":
+            weather_color = "#0C0"
+        elif category== "Moderate":
+            weather_color = "#FFFF00"
+        elif category== "Unhealthy for Sensitive Groups":
+            weather_color = "#ff9900"
+        elif category== "Unhealthy":
+            weather_color = "#FF0000"
+        elif category== "Very Unhealthy":
+            weather_color = "#990066"
+        elif category== "Hazardous":
+            weather_color = "#660000"
+        
+        root.configure(background=weather_color)
+        
+        myLabel = Label(topframe,text=city + "Air Quality "+str(quality)+ " "+ category,font=("Helvetica",20),background=weather_color )
+        myLabel.grid(row=1,column=0,columnspan=2)
+        
+    except Exception as e:
+            api="Error..."
+
+
+
+
+# labels and buttons
+zip = Entry(topframe)
+zip.grid(row=0,column=0,stick=W+E+N+S)
+
+submit = Button(topframe,text="Lookup Zipcode",command=ziplookup)
+submit.grid(row=0,column=1,stick=W+E+N+S)
+
+
+def exit():
+    root.destroy()
+
+exit = Button(bt,text="Exit",padx=20,pady=20,font=("Times New Roman",10),command=exit)
+exit.pack()
+
+
+root.mainloop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
